@@ -48,3 +48,13 @@ Un usuari pot crear moltes playlists. De cada playlist guardem un títol, el nom
 Podem dir que existeixen dos tipus de playlists: actives i esborrades. Una playlist que està activa pot ser compartida amb altres usuaris, això vol dir que altres usuaris poden afegir cançons en ella. En una llista compartida ens interessa saber quin usuari ha estat el que ha afegit cada cançó i en quina data ho va fer. Una cançó només pot pertànyer a un únic àlbum. Un àlbum pot contenir moltes cançons. Un àlbum ha estat publicat per un únic artista. Un artista pot haver publicat molts àlbums. De cada cançó guardem un identificador únic, un títol, una durada i el nombre de vegades que ha estat reproduïda pels usuaris de Spotify.
 
 De cada àlbum guardem un identificador únic, títol, any de publicació i una imatge amb la portada. De cada artista guardem un identificador únic, nom i una imatge de l'artista. Un usuari pot seguir a molts artistes. Un artista pot estar relacionat amb altres artistes que facin música semblant. De manera que Spotify pugui mostrar-nos un llistat d'artistes relacionats amb els artistes que ens agraden. També ens interessa guardar quins són els àlbums i les cançons favorites d'un usuari. Un usuari pot seleccionar molts àlbums i moltes cançons com a favorites. NOTA: Un cop creada les bases de dades, omplirem les taules amb dades de prova per tal de verificar que les relacions són correctes.
+
+
+----
+## dbDocs
+----
+```JavaScript
+dbdocs login
+// dbdocs build <path to your dbml file>database.dbml
+dbdocs build optica.dbml>database.dbml
+```

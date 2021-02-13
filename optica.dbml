@@ -1,0 +1,125 @@
+Project Optica {
+note: '''
+# Optica
+**Barcelona Activa**
+'''
+}
+
+enum frame {
+    floating
+    pasta
+    metalic
+}
+
+Table provider as P {
+    id int [pk, increment]
+    address_id int [ref: - A.id, not null]
+    subsidiary_id int [ref: > P.id, note: 'Also a provider']
+    nif varchar(10) [unique, not null]
+    telephone varchar(50) [unique]
+    fax varchar(50) [unique]
+}
+
+Table branch as B {
+    id int [pk, increment]
+    provider_id int [ref: < P.id]
+    name varchar(255) [not null]
+}
+
+Table glasses as G {
+    id int [pk, increment]
+    frame_color varchar(255) [not null]
+    frame_type frame
+    left_graduation decimal(2,2) [not null]
+    right_graduation decimal(2,2) [not null]
+    left_glass_color varchar(255) [not null]
+    right_glass_color varchar(255) [not null]
+}
+
+Table glasses_branch_provider as GBP {
+    id int [pk, increment]
+    branch_id int [ref: > B.id, not null]
+    provider_id int [ref: > P.id, not null]
+    glasses_id int [ref: > G.id, not null]
+    price decimal(10,2)
+
+    indexes {
+        (branch_id, glasses_id)
+        (branch_id, glasses_id)
+        (glasses_id, provider_id)
+    }
+}
+
+Table address as A{
+    id int [pk, increment]
+    street_1 varchar(255) [not null]
+    street_2 varchar(255) [note: 'If any description is needed']
+    street_number varchar(20) [not null, note: 'Can contain chars: 10B']
+    block_floor varchar(20) [note: 'Can contain chars: Entresuelo']
+    floor_door varchar(20)
+    city varchar(255) [not null]
+    postal_code varchar(32) [not null]
+    country char(2) [not null, note: 'ISO 3166-1 alpha-2: ES']
+}
+
+Table people as Pe {
+    id int [pk, increment]
+    addres_id int [ref: - A.id, not null]
+    registration_date timestamp
+    forename varchar(255) [not null]
+    middlename varchar(255)
+    surname varchar(255)
+    telephone varchar(50)
+    email varchar(255)
+}
+
+Table employee as E {
+    id int [pk, increment]
+    personal_data int [ref: - Pe.id, not null]
+}
+
+Table customer as C {
+    id int [pk, increment]
+    personal_data int [ref: - Pe.id, not null]
+    recommended_by int [ref: - C.id]
+}
+
+Table customer_order as CO {
+    id int [pk, increment]
+    employee int [ref: - E.id, not null]
+    customer int [ref: - C.id, not null]
+    order_date timestamp
+    total decimal(10,2) [not null, note: 'It will be calculated: Every detail Total Price + %profit + taxes']
+}
+
+Table customer_order_detail as COD {
+    product_id int [ref: - GBP.id]
+    customer_order_id int
+    
+    price decimal(10,2) [not null, note: 'We need to store it as glasses can change its prices over time']
+
+    indexes {
+        (product_id, customer_order_id) [PK]
+    }
+}
+
+Table order as O {
+    id int [pk, increment]
+    provider_id int [ref: < P.id, not null]
+    employee int [ref: - E.id, not null]
+    order_date timestamp
+    total decimal(10,2) [not null]
+}
+
+Table order_detail as OD {
+    product_id int [ref: - GBP.id]
+    order_id int
+    price decimal(10,2) [not null, note: 'We need to store it as glasses can change its prices over time']
+
+    indexes {
+        (product_id, order_id) [PK]
+    }
+}
+
+Ref: O.id < OD.order_id [delete: cascade, update: cascade]
+Ref: CO.id < COD.customer_order_id [delete: cascade, update: cascade]
