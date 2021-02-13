@@ -34,7 +34,7 @@ Table province as AP [headercolor: #A3DB34] {
 
 Table people as Pe {
     id int [pk, increment]
-    addres_id int [ref: > A.id, not null]
+    addres_id int [ref: < A.id, not null]
     forename varchar(255) [not null]
     middlename varchar(255)
     surname varchar(255)
@@ -73,7 +73,7 @@ Table pizza as P {
 
 Table shop as S {
     id int [pk, increment]
-    address_id int [ref: > A.id, not null]
+    address_id int [ref: < A.id, not null]
 }
 
 Table employee as E {
