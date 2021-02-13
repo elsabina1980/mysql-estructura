@@ -13,7 +13,7 @@ enum frame {
 
 Table provider as P {
     id int [pk, increment]
-    address_id int [ref: > A.id, not null]
+    address_id int [ref: < A.id, not null]
     subsidiary_id int [ref: > P.id, note: 'Also a provider']
     nif varchar(10) [unique, not null]
     telephone varchar(50) [unique]
@@ -64,8 +64,8 @@ Table address as A{
 
 Table people as Pe {
     id int [pk, increment]
-    addres_id int [ref: > A.id, not null]
-    registration_date timestamp
+    address_id int [ref: < A.id, not null]
+    registration_date timestamp [default: `now()`]
     forename varchar(255) [not null]
     middlename varchar(255)
     surname varchar(255)
@@ -74,7 +74,7 @@ Table people as Pe {
 }
 
 Table employee as E {
-    id int [pk, increment]
+    id int [pk, increment] 
     personal_data int [ref: - Pe.id, not null]
 }
 
@@ -86,16 +86,16 @@ Table customer as C {
 
 Table customer_order as CO {
     id int [pk, increment]
-    employee int [ref: - E.id, not null]
-    customer int [ref: - C.id, not null]
-    order_date timestamp
-    total decimal(10,2) [not null, note: 'It will be calculated: Every detail Total Price + %profit + taxes']
+    employee int [ref: > E.id, not null]
+    customer int [ref: > C.id, not null]
+    order_date timestamp [default: `now()`]
+    total_price decimal(10,2) [not null, note: 'It will be calculated: Every detail Total Price + %profit + taxes']
 }
 
 Table customer_order_detail as COD {
-    product_id int [ref: - GBP.id]
-    customer_order_id int
-    
+    product_id int [ref: < GBP.id, not null]
+    customer_order_id int [ref: < CO.id, not null]
+    quantity int [default: 1]
     price decimal(10,2) [not null, note: 'We need to store it as glasses can change its prices over time']
 
     indexes {
@@ -108,18 +108,16 @@ Table order as O {
     provider_id int [ref: < P.id, not null]
     employee int [ref: - E.id, not null]
     order_date timestamp
-    total decimal(10,2) [not null]
+    total_price decimal(10,2) [not null]
 }
 
 Table order_detail as OD {
-    product_id int [ref: - GBP.id]
-    order_id int
+    product_id int [ref: < GBP.id, not null]
+    order_id int [ref: < O.id, not null]
+    quantity int [default: 1]
     price decimal(10,2) [not null, note: 'We need to store it as glasses can change its prices over time']
 
     indexes {
         (product_id, order_id) [PK]
     }
 }
-
-Ref: O.id < OD.order_id [delete: cascade, update: cascade]
-Ref: CO.id < COD.customer_order_id [delete: cascade, update: cascade]
