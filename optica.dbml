@@ -13,7 +13,7 @@ enum frame {
 
 Table provider as P {
     id int [pk, increment]
-    address_id int [ref: - A.id, not null]
+    address_id int [ref: > A.id, not null]
     subsidiary_id int [ref: > P.id, note: 'Also a provider']
     nif varchar(10) [unique, not null]
     telephone varchar(50) [unique]
@@ -64,7 +64,7 @@ Table address as A{
 
 Table people as Pe {
     id int [pk, increment]
-    addres_id int [ref: - A.id, not null]
+    addres_id int [ref: > A.id, not null]
     registration_date timestamp
     forename varchar(255) [not null]
     middlename varchar(255)
