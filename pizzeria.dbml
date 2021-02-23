@@ -10,7 +10,7 @@ Enum employee_type {
     chef
 }
 
-Table address as A [headercolor: #A3DB34] {
+Table deliver_address as A {
     id int [pk, increment]
     street_1 varchar(255) [not null]
     street_2 varchar(255) [note: 'If any description is needed']
@@ -22,27 +22,23 @@ Table address as A [headercolor: #A3DB34] {
     country char(2) [not null, note: 'ISO 3166-1 alpha-2: ES']
 }
 
-Table city as AC [headercolor: #A3DB34] {
+Table city as AC {
     id int [pk, increment]
     province_id int [ref: > AP.id, not null]
     name varchar(255)
 }
-Table province as AP [headercolor: #A3DB34] {
+Table province as AP {
     id int [pk, increment]
     name varchar(255)
 }
 
-Table people as Pe {
+Table customer as C {
     id int [pk, increment]
-    addres_id int [ref: < A.id, not null]
+    address_id int [ref: < A.id, not null]
     forename varchar(255) [not null]
     middlename varchar(255)
     surname varchar(255)
     telephone varchar(50)
-}
-
-Table customer as C {
-    id int [pk, ref: - Pe.id]
 }
 
 Table product as P {
@@ -73,19 +69,40 @@ Table pizza as P {
 
 Table shop as S {
     id int [pk, increment]
-    address_id int [ref: < A.id, not null]
+    street_1 varchar(255) [not null]
+    street_2 varchar(255) [note: 'If any description is needed']
+    street_number varchar(20) [not null, note: 'Can contain chars: 10B']
+    block_floor varchar(20) [note: 'Can contain chars: Entresuelo']
+    floor_door varchar(20)
+    city varchar(255) [ref: < AC.id,not null]
+    postal_code varchar(32) [not null]
+    country char(2) [not null, note: 'ISO 3166-1 alpha-2: ES']
 }
 
 Table employee as E {
-    nif varchar(10) [pk, not null]
-    id int [ref: - Pe.id, not null]
+    id int [pk, increment]
+    shop int [ref: < S.id]
+    nif varchar(10) [unique, not null]
     type employee_type
+    forename varchar(255) [not null]
+    middlename varchar(255)
+    surname varchar(255)
+    telephone varchar(50)
+    street_1 varchar(255) [not null]
+    street_2 varchar(255) [note: 'If any description is needed']
+    street_number varchar(20) [not null, note: 'Can contain chars: 10B']
+    block_floor varchar(20) [note: 'Can contain chars: Entresuelo']
+    floor_door varchar(20)
+    city varchar(255) [ref: < AC.id,not null]
+    postal_code varchar(32) [not null]
+    country char(2) [not null, note: 'ISO 3166-1 alpha-2: ES']
 }
 
 Table customer_order as CO {
     id int [pk, increment]
     shop_id int [ref: < S.id, not null]
     customer int [ref: > C.id, not null]
+    deliver_address int [ref: > A.id]
     deliverer int [ref: > E.id]
     deliver boolean [default: false]
     ordered_at timestamp [default: `now()`]
@@ -95,6 +112,7 @@ Table customer_order as CO {
     indexes {
         (deliver, deliverer, ordered_at)
         (shop_id, id)
+        (deliver_address, customer)
     }
 }
 
@@ -102,7 +120,7 @@ Table customer_order_detail as COD {
     product_id int [ref: < P.id, not null]
     customer_order_id int [ref: < CO.id]
     quantity int [default: 1]
-    price decimal(10,2) [not null, note: 'We need to store it as glasses can change its prices over time']
+    price decimal(10,2) [not null]
 
     indexes {
         (product_id, customer_order_id) [pk]

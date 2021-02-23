@@ -13,11 +13,18 @@ enum frame {
 
 Table provider as P {
     id int [pk, increment]
-    address_id int [ref: < A.id, not null]
     subsidiary_id int [ref: > P.id, note: 'Also a provider']
     nif varchar(10) [unique, not null]
     telephone varchar(50) [unique]
     fax varchar(50) [unique]
+    street_1 varchar(255) [not null]
+    street_2 varchar(255) [note: 'If any description is needed']
+    street_number varchar(20) [not null, note: 'Can contain chars: 10B']
+    block_floor varchar(20) [note: 'Can contain chars: Entresuelo']
+    floor_door varchar(20)
+    city varchar(255) [not null]
+    postal_code varchar(32) [not null]
+    country char(2) [not null, note: 'ISO 3166-1 alpha-2: ES']
 }
 
 Table branch as B {
@@ -50,8 +57,15 @@ Table glasses_branch_provider as GBP {
     }
 }
 
-Table address as A{
+
+Table employee as E {
     id int [pk, increment]
+    registration_date timestamp [default: `now()`]
+    forename varchar(255) [not null]
+    middlename varchar(255)
+    surname varchar(255)
+    telephone varchar(50)
+    email varchar(255)
     street_1 varchar(255) [not null]
     street_2 varchar(255) [note: 'If any description is needed']
     street_number varchar(20) [not null, note: 'Can contain chars: 10B']
@@ -62,26 +76,23 @@ Table address as A{
     country char(2) [not null, note: 'ISO 3166-1 alpha-2: ES']
 }
 
-Table people as Pe {
+Table customer as C {
     id int [pk, increment]
-    address_id int [ref: < A.id, not null]
+    recommended_by int [ref: - C.id]
     registration_date timestamp [default: `now()`]
     forename varchar(255) [not null]
     middlename varchar(255)
     surname varchar(255)
     telephone varchar(50)
     email varchar(255)
-}
-
-Table employee as E {
-    id int [pk, increment] 
-    personal_data int [ref: - Pe.id, not null]
-}
-
-Table customer as C {
-    id int [pk, increment]
-    personal_data int [ref: - Pe.id, not null]
-    recommended_by int [ref: - C.id]
+    street_1 varchar(255) [not null]
+    street_2 varchar(255) [note: 'If any description is needed']
+    street_number varchar(20) [not null, note: 'Can contain chars: 10B']
+    block_floor varchar(20) [note: 'Can contain chars: Entresuelo']
+    floor_door varchar(20)
+    city varchar(255) [not null]
+    postal_code varchar(32) [not null]
+    country char(2) [not null, note: 'ISO 3166-1 alpha-2: ES']
 }
 
 Table customer_order as CO {

@@ -55,6 +55,8 @@ De cada àlbum guardem un identificador únic, títol, any de publicació i una 
 ----
 ```JavaScript
 dbdocs login
-// dbdocs build <path to your dbml file>database.dbml
-dbdocs build optica.dbml>database.dbml
+
+dbdocs build optica.dbm
 ```
+## https://dbdiagram.io/
+png exports.
